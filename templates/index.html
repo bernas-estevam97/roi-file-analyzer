@@ -1,0 +1,51 @@
+<base href="../">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregate file analyzer</title>
+    <link rel="stylesheet" href="./libs/css/style.css">
+</head>
+<body>
+    <div class="top">
+    <h3>A simple application that analyzes aggregate ROI files obtained from ImageJ(Fiji) 
+        and returns any ROI that may be a result of 2 or more fused aggregates.</h3>
+    </div>
+    <div class="upload-section">
+        <h4>Upload your file here. Only xlsx, txt and csv formats are accepted.</h4>
+        <div class="upload-info">
+        <input type="file" id="uploadFile" name="file" alt="Upload" accept=".xlsx, .txt, .csv" style="display:none;">
+        <input class="upload-btn" type="button" value="Upload file" onclick="document.getElementById('uploadFile').click();" style="cursor: pointer;"/>
+        <p id="fileName"></p>
+        </div>
+        <button value="Reset" onclick="resetFile();">Reset</button>
+        <button value="Run" onclick="displayFile();">Run</button><br>
+        <div class="select-options" id="selectOptions">
+        <select id="sheetSelect">
+            
+        </select>
+        <button id="changeSheet" onclick="changeSheet();">Change Sheet</button>
+        </div>
+        <!-- <button value="Export to table" onclick="ExportToTable();">Export to table</button> -->
+        <div id="my_file_output" class="text-area"></div>
+        <div class="table-area">
+        <table id="tblcsvdata" class="table-csv" border="1" style="border-collapse: collapse;">
+            
+            <tbody>
+   
+            </tbody>
+   
+       </table>
+        </div>
+        <div id="excel_data" class="excel-data"></div>
+        <!-- <table id="exceltable"></table> -->
+    </div>
+
+
+
+<script type="text/javascript" src="./libs/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="./libs/js/functions.js"></script>
+<script type="text/javascript" src="./libs/js/xlsx.js"></script>
+</body>
+</html>
