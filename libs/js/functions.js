@@ -169,6 +169,7 @@ function changeSheet(){
         if(sheet_data.length > 0){
             var table_output = '<table class="excel-table">';
 
+            
             for(var row = 0; row < sheet_data.length; row++)
             {
 
