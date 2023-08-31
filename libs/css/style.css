@@ -68,6 +68,12 @@ body{
     background: #fff;
 }
 
+.upload-section .table-csv tbody{
+    display: block;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
 .upload-section .excel-data table{
     background: #fff;
     border: 1px solid #000;

@@ -8,6 +8,7 @@ resultsAllSection.style.display = 'none';
 functionButtons.style.display = 'none';
 sheetButton.style.display = 'none';
 sheetSelector.style.display = 'none';
+document.getElementById('tblcsvdata').style.display = 'none';
 // localStorage.clear();
 
 // Input event listener with handlefile function.
@@ -334,7 +335,8 @@ function getPossibleFusedAggregateValues(area){
         resultsAllSection.style.display = '';
         results.innerHTML = resultsText;
     } else if (extension == 'csv'){
-
+        var csvTable = document.getElementById('tblcsvdata');
+        
     }
 }
 
