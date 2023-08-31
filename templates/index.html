@@ -19,8 +19,12 @@
         <input class="upload-btn" type="button" value="Upload file" onclick="document.getElementById('uploadFile').click();" style="cursor: pointer;"/>
         <p id="fileName"></p>
         </div>
-        <button value="Reset" onclick="resetFile();">Reset</button>
-        <button value="Run" onclick="displayFile();">Run</button><br>
+        <div id="functionButtons">
+        <label for="areaInput">Input your area cutoff value:</label>
+        <input class="area-input" type="text" id="areaInput" placeholder="Area..." size="5">
+        <button value="Run" onclick="getPossibleFusedAggregateValues();">Run</button>
+        <button value="Reset" onclick="resetFile();">Reset</button><br>
+        </div>
         <div class="select-options" id="selectOptions">
         <select id="sheetSelect">
             
@@ -28,7 +32,7 @@
         <button id="changeSheet" onclick="changeSheet();">Change Sheet</button>
         </div>
         <!-- <button value="Export to table" onclick="ExportToTable();">Export to table</button> -->
-        <div id="my_file_output" class="text-area"></div>
+        <div id="my_file_output" class="text-area" style="white-space: pre-line;"></div>
         <div class="table-area">
         <table id="tblcsvdata" class="table-csv" border="1" style="border-collapse: collapse;">
             
@@ -40,6 +44,13 @@
         </div>
         <div id="excel_data" class="excel-data"></div>
         <!-- <table id="exceltable"></table> -->
+    </div>
+    <div class="results" id="resultsAllSection">
+    <h4>Results:</h4>
+    <p>Every area that may be of interest with respective index according to your area cutoff inputted above.</p>
+    <div class="results-section" id="resultsSection">
+
+    </div>
     </div>
 
 

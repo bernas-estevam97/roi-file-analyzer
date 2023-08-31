@@ -1,8 +1,17 @@
+// Variables for changing excel sheets if available.
+var functionButtons = document.getElementById('functionButtons');
 var sheetSelector = document.getElementById('sheetSelect');
 var sheetButton = document.getElementById('changeSheet');
+var results = document.getElementById('resultsSection');
+var resultsAllSection = document.getElementById('resultsAllSection');
+resultsAllSection.style.display = 'none';
+functionButtons.style.display = 'none';
 sheetButton.style.display = 'none';
 sheetSelector.style.display = 'none';
-localStorage.clear();
+// localStorage.clear();
+
+// Input event listener with handlefile function.
+
 
 document.getElementById('uploadFile').addEventListener('change', handleFiles, false);
 
@@ -13,16 +22,23 @@ function handleFiles(event) {
     regex = new RegExp('[^.]+$')
     extension = file.match(regex);
     if (extension == 'txt'){
+        sheetButton.style.display = 'none';
+        sheetSelector.style.display = 'none';
         var fr = new FileReader();
         fr.onload = function () {
             file = null;
             document.getElementById('my_file_output').style.display = 'block';
             document.getElementById('my_file_output').textContent = this.result;
+            functionButtons.style.display = '';
             document.getElementById('tblcsvdata').style.display = 'none';
             document.getElementById('excel_data').style.display = 'none';
         };
         fr.readAsText(event.target.files[0]);
     } else if(extension == 'csv'){
+        sheetButton.style.display = 'none';
+        sheetSelector.style.display = 'none';
+        document.getElementById('areaInput').value = '';
+        resultsAllSection.style.display = 'none';
         var frCSV = new FileReader();
 
         // Read file as string 
@@ -45,6 +61,7 @@ function handleFiles(event) {
             document.getElementById('my_file_output').style.display = 'none';
             document.getElementById('excel_data').style.display = 'none';
             tbodyEl.innerHTML = "";
+            functionButtons.style.display = '';
 
             // Loop on the row Array (change row=0 if you also want to read 1st row)
             // Most CSV files dont have column names, but if they do we can always use those as table headers in html
@@ -70,6 +87,8 @@ function handleFiles(event) {
         };
         frCSV.readAsText(event.target.files[0]);
     } else if (extension == 'xls' || extension == 'xlsx'){
+        document.getElementById('areaInput').value = '';
+        resultsAllSection.style.display = 'none';
         var reader = new FileReader();
 
         reader.readAsArrayBuffer(event.target.files[0]);
@@ -83,6 +102,7 @@ function handleFiles(event) {
             document.getElementById('excel_data').style.display = '';
             document.getElementById('my_file_output').style.display = 'none';
             document.getElementById('tblcsvdata').style.display = 'none';
+            functionButtons.style.display = '';
 
             var data = new Uint8Array(reader.result);
 
@@ -269,26 +289,56 @@ let resetFile = function(){
     document.getElementById('uploadFile').value = null;
     document.getElementById('excel_data').style.display = 'none';
     document.getElementById('selectOptions').style.display = 'none';
-    
+    functionButtons.style.display = 'none';
+    document.getElementById('areaInput').value = '';
+    resultsAllSection.style.display = 'none';
 }
 
-// function displayFile(){
-//     switch(file){
-//         case file.type.match('text/plain'):
-//             console.log('TXT');
-//             break;
-//         case file.type.match('text/csv'):
-//             console.log('CSV');
-//             // code block
-//             break;
-//         case file.type.match('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'):
-//             console.log('XLSX');
-//             // code block
-//             break;
-//     }
-// }
+// Run button function: this function returns which values (index) have ROI with area bigger than specified in the area input box
 
+function getPossibleFusedAggregateValues(area){
+    area = document.getElementById('areaInput').value;
+    var file = document.getElementById('uploadFile').files[0];
+    file = document.getElementById('uploadFile').value;
+    regex = new RegExp('[^.]+$')
+    extension = file.match(regex);
+    if (extension == 'txt'){
+        var text = document.getElementById('my_file_output').textContent;
+        var textSplitedbyLine = text.split('\n');
+        textSplitedbyLine = textSplitedbyLine.slice(0, textSplitedbyLine.length -1);
+        const arrName = new Array();
+        arrName.push(textSplitedbyLine[0].split('\t'));
+        const areaValues = new Array();
+        var markedArea = [];
+        var markedAreaIndex = [];
+        var nonmarkedArea = [];
+        var resultsText = '';
+        if (arrName[0].indexOf('Area' != -1)){
+            var areaIndex = arrName[0].indexOf('Area');
+        } else{
+            alert('Your txt file does not have a Area column.');
+        }
+        for (var i = 1; i < textSplitedbyLine.length; i++){
+            var line = textSplitedbyLine[i].split('\t');
+            areaValues.push(line[areaIndex]);
+        }
+        for (var i = 0; i < areaValues.length; i++){
+            if (areaValues[i] >= area){
+                markedArea.push(areaValues[i]);
+                markedAreaIndex.push(i);
+                resultsText += 'Line '+(i+1)+': '+ areaValues[i]+'<br>';
+            } else{
+                nonmarkedArea.push(areaValues[i]);
+            }
+        }
+        resultsAllSection.style.display = '';
+        results.innerHTML = resultsText;
+    } else if (extension == 'csv'){
 
+    }
+}
+
+// Testing function 
 
 function displayFile(){
     file = document.getElementById('uploadFile').value;
@@ -363,45 +413,6 @@ function readCSVFile(){
 }
 
 
-function excelFileToJSON(file){
-    try {
-      var reader = new FileReader();
-      reader.readAsBinaryString(file);
-      reader.onload = function(e) {
-
-          var data = e.target.result;
-          var workbook = XLSX.read(data, {
-              type : 'binary'
-          });
-          var result = {};
-          var firstSheetName = workbook.SheetNames[0];
-          //reading only first sheet data
-          var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
-          alert(JSON.stringify(jsonData));
-          //displaying the json result into HTML table
-          displayJsonToHtmlTable(jsonData);
-          }
-      }catch(e){
-          console.error(e);
-      }
-}
-
-
-function displayJsonToHtmlTable(jsonData){
-    var table=document.getElementById("display_excel_data");
-    if(jsonData.length>0){
-        var htmlData='<tr><th>Student Name</th><th>Address</th><th>Email ID</th><th>Age</th></tr>';
-        for(var i=0;i<jsonData.length;i++){
-            var row=jsonData[i];
-            htmlData+='<tr><td>'+row["Student Name"]+'</td><td>'+row["Address"]
-                  +'</td><td>'+row["Email ID"]+'</td><td>'+row["Age"]+'</td></tr>';
-        }
-        table.innerHTML=htmlData;
-    }else{
-        table.innerHTML='There is no data in Excel';
-    }
-}
-
 
 // const excel_file = document.getElementById('excel_file');
 
@@ -471,4 +482,3 @@ function displayJsonToHtmlTable(jsonData){
 //     }
 
 // });
-

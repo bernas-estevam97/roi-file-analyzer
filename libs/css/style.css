@@ -17,6 +17,10 @@ body{
     text-align: center;
 }
 
+.upload-section .upload-info{
+    margin-bottom: 10px;
+}
+
 .upload-section .upload-btn{
     background: #fff;
     border-radius: 3px;
@@ -49,6 +53,8 @@ body{
     border: 2px solid #000;
     text-align: justify;
     margin-top: 20px;
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .upload-section .table-area .table-csv{
@@ -74,4 +80,15 @@ body{
 
 .upload-section .select-options{
     margin: 10px;
+}
+
+.results{
+    margin-top: 10px;
+}
+
+.results .results-section{
+    background: #fff;
+    border: 2px solid #000;
+    max-height: 200px;
+    overflow-y: scroll;
 }
