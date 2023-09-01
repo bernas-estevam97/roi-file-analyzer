@@ -7,9 +7,9 @@ const createWindow = () => {
       width: 1200,
       height: 800,
     })
-  
     win.loadFile('templates/index.html')
   }
+
 
 
 app.whenReady().then(() => {

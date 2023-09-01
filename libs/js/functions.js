@@ -9,6 +9,7 @@ functionButtons.style.display = 'none';
 sheetButton.style.display = 'none';
 sheetSelector.style.display = 'none';
 document.getElementById('tblcsvdata').style.display = 'none';
+document.getElementById('excel_data').style.display = 'none';
 // localStorage.clear();
 
 // Input event listener with handlefile function.
@@ -23,6 +24,8 @@ function handleFiles(event) {
     regex = new RegExp('[^.]+$')
     extension = file.match(regex);
     if (extension == 'txt'){
+        results.innerHTML = '';
+        resultsAllSection.style.display = 'none';
         sheetButton.style.display = 'none';
         sheetSelector.style.display = 'none';
         var fr = new FileReader();
@@ -36,6 +39,8 @@ function handleFiles(event) {
         };
         fr.readAsText(event.target.files[0]);
     } else if(extension == 'csv'){
+        results.innerHTML = '';
+        resultsAllSection.style.display = 'none';
         sheetButton.style.display = 'none';
         sheetSelector.style.display = 'none';
         document.getElementById('areaInput').value = '';
@@ -88,6 +93,8 @@ function handleFiles(event) {
         };
         frCSV.readAsText(event.target.files[0]);
     } else if (extension == 'xls' || extension == 'xlsx'){
+        results.innerHTML = '';
+        resultsAllSection.style.display = 'none';
         document.getElementById('areaInput').value = '';
         resultsAllSection.style.display = 'none';
         var reader = new FileReader();
@@ -124,7 +131,6 @@ function handleFiles(event) {
                     
                 }
                 var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_names[sheetSelector.options[sheetSelector.selectedIndex].value]], {header:1});
-                console.log(sheet_data);
             } else{
                 var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_names[0]], {header:1});
             }
@@ -173,6 +179,8 @@ function handleFiles(event) {
 }
 
 function changeSheet(){
+    resultsAllSection.style.display = 'none';
+    results.innerHTML = '';
     var file = document.getElementById('uploadFile').files[0];
     var reader = new FileReader();
     reader.readAsArrayBuffer(file);
@@ -186,7 +194,6 @@ function changeSheet(){
         let sheet_index = sheet_names[sheetSelector.options[sheetSelector.selectedIndex].value];
         
         let sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_names[sheet_index-1]], {header:1});
-        console.log(sheet_data);
         if(sheet_data.length > 0){
             var table_output = '<table class="excel-table">';
 
@@ -303,42 +310,143 @@ function getPossibleFusedAggregateValues(area){
     file = document.getElementById('uploadFile').value;
     regex = new RegExp('[^.]+$')
     extension = file.match(regex);
+    var markedArea = [];
+    var markedAreaIndex = [];
+    var nonmarkedArea = [];
+    const areaValues = new Array();
+    var resultsText = '';
     if (extension == 'txt'){
         var text = document.getElementById('my_file_output').textContent;
         var textSplitedbyLine = text.split('\n');
         textSplitedbyLine = textSplitedbyLine.slice(0, textSplitedbyLine.length -1);
         const arrName = new Array();
         arrName.push(textSplitedbyLine[0].split('\t'));
-        const areaValues = new Array();
-        var markedArea = [];
-        var markedAreaIndex = [];
-        var nonmarkedArea = [];
-        var resultsText = '';
         if (arrName[0].indexOf('Area' != -1)){
             var areaIndex = arrName[0].indexOf('Area');
         } else{
             alert('Your txt file does not have a Area column.');
         }
-        for (var i = 1; i < textSplitedbyLine.length; i++){
+        for (let i = 1; i < textSplitedbyLine.length; i++){
             var line = textSplitedbyLine[i].split('\t');
             areaValues.push(line[areaIndex]);
         }
-        for (var i = 0; i < areaValues.length; i++){
-            if (areaValues[i] >= area){
-                markedArea.push(areaValues[i]);
-                markedAreaIndex.push(i);
-                resultsText += 'Line '+(i+1)+': '+ areaValues[i]+'<br>';
-            } else{
-                nonmarkedArea.push(areaValues[i]);
+        if (area == ''){
+            alert('Please input your area value cutoff');
+            resultsAllSection.style.display = 'none';
+            results.innerHTML = '';
+        } else{
+            for (let i = 0; i < areaValues.length; i++){
+                if (parseInt(areaValues[i]) >= parseInt(area)){
+                    markedArea.push(areaValues[i]);
+                    markedAreaIndex.push(i);
+                    resultsText += '<b>Index '+(i+1)+':</b>'+ areaValues[i]+'<br>';
+                } else{
+                    nonmarkedArea.push(areaValues[i]);
+                }
             }
+            if (resultsText.innerHTML == ''){
+                alert('You have no area values above your cutoff of:'+ area);
+            }
+            else{
+                alert('You have no area values above your cutoff of: '+ area);
+                document.getElementById('areaInput').value = '';
+                results.innerHTML = '';
+                resultsAllSection.style.display = 'none';
+            }  
+              
         }
-        resultsAllSection.style.display = '';
-        results.innerHTML = resultsText;
     } else if (extension == 'csv'){
         var csvTable = document.getElementById('tblcsvdata');
+        const firstRow = new Array();
+        var areaCellIndex = 0;
+        for (let c=0; c<csvTable.rows[0].cells.length; c++) {
+            firstRow.push(csvTable.rows[0].cells[c].innerHTML);
+        }
+        if (firstRow.indexOf('Area') == -1) {
+            alert('Your csv table does not contain an Area column.');
+            return;
+        }
+        areaCellIndex = firstRow.indexOf('Area');
+        for (let r=1; r<csvTable.rows.length; r++) {
+            areaValues.push(csvTable.rows[r].cells[areaCellIndex].innerHTML);
+        }
+        if (area == ''){
+            alert('Please input your area value cutoff');
+            resultsAllSection.style.display = 'none';
+            results.innerHTML = '';
+        } else{
+            for (let i = 0; i < areaValues.length; i++){
+                if (parseInt(areaValues[i]) >= parseInt(area)){ // values need to be Ints to be properly compared
+                    markedArea.push(areaValues[i]);
+                    markedAreaIndex.push(i);
+                    resultsText += '&nbsp<b>Index '+(i+1)+':</b>&nbsp'+ areaValues[i]+'<br>';
+                } else{
+                    nonmarkedArea.push(areaValues[i]);
+                }
+            }
+            if (resultsText){
+                resultsAllSection.style.display = '';
+                results.innerHTML = resultsText;
+            }
+            else{
+                alert('You have no area values above your cutoff of: '+ area);
+                document.getElementById('areaInput').value = '';
+                results.innerHTML = '';
+                resultsAllSection.style.display = 'none';
+            }  
+        }     
         
+    } else if(extension == 'xlsx' || extension == 'xlx'){
+        var excelTable = document.getElementById('excel_data').getElementsByTagName('tbody')[0];
+        const firstRowExcel = new Array();
+        var areaCellIndex = 0;
+        for (let c=0; c<excelTable.rows[1].cells.length; c++) {
+            firstRowExcel.push(excelTable.rows[1].cells[c].innerHTML);
+        }
+        if (firstRowExcel.indexOf('Area') == -1) {
+            alert('Your excel table does not contain an Area column.');
+            return;
+        }
+        areaCellIndex = firstRowExcel.indexOf('Area');
+        for (let r=2; r<excelTable.rows.length; r++) {
+            areaValues.push(excelTable.rows[r].cells[areaCellIndex].innerHTML);
+        }
+        if (area == ''){
+            alert('Please input your area value cutoff');
+            resultsAllSection.style.display = 'none';
+            results.innerHTML = '';
+        } else{
+            for (let i = 0; i < areaValues.length; i++){
+                if (parseInt(areaValues[i]) >= parseInt(area)){ // values need to be Ints to be properly compared
+                    markedArea.push(areaValues[i]);
+                    markedAreaIndex.push(i);
+                    resultsText += '&nbsp<b>Index '+(i+1)+':</b>&nbsp'+ areaValues[i]+'<br>';
+                } else{
+                    nonmarkedArea.push(areaValues[i]);
+                }
+            }
+            if (resultsText){
+                resultsAllSection.style.display = '';
+                results.innerHTML = resultsText;
+            }
+            else{
+                alert('You have no area values above your cutoff of: '+ area);
+                document.getElementById('areaInput').value = '';
+                results.innerHTML = '';
+                resultsAllSection.style.display = 'none';
+            }  
+        }    
     }
 }
+
+// Reset values only function
+
+function resetValues(){
+    results.innerHTML = '';
+    resultsAllSection.style.display = 'none';
+    document.getElementById('areaInput').value = '';
+}
+
 
 // Testing function 
 
