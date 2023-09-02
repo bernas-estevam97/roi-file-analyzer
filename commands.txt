@@ -1,0 +1,1 @@
+npx electron-packager . roi-file-analyzer --platform=darwin ---> pack to macos, USE ADMIN CMD

@@ -10,6 +10,8 @@ sheetButton.style.display = 'none';
 sheetSelector.style.display = 'none';
 document.getElementById('tblcsvdata').style.display = 'none';
 document.getElementById('excel_data').style.display = 'none';
+document.getElementById('my_file_output').style.display = 'none';
+
 // localStorage.clear();
 
 // Input event listener with handlefile function.

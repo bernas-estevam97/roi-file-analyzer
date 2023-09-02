@@ -23,7 +23,7 @@
         <label for="areaInput">Input your area cutoff value:</label>
         <input class="area-input" id="areaInput" type="number" min="1" onkeypress="return /[0-9.]/i.test(event.key)" size="6" placeholder="Area...">
         <button value="Run" onclick="getPossibleFusedAggregateValues();">Run</button>
-        <button value="Reset values" onclick="resetValues();">Reset Values</button>
+        <button value="Reset values" onclick="resetValues();">Reset results</button>
         <button value="Reset" onclick="resetFile();">Reset all</button><br>
         </div>
         <div class="select-options" id="selectOptions">
@@ -50,7 +50,7 @@
     <h4>Results:</h4>
     <p>Every area that may be of interest with respective index according to your area cutoff inputted above.</p>
     <div class="results-section" id="resultsSection">
-
+        
     </div>
     </div>
 
